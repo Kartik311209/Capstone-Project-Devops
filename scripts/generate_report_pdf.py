@@ -116,7 +116,7 @@ def main():
     pdf.cell(0, 7, "4.2  Terminal Execution Evidence", new_x="LMARGIN", new_y="NEXT")
     pdf.set_text_color(30, 41, 59)
     pdf.add_screenshot("Figure 5: Pytest Suite (3 passed) + SecretGuard Scan (0 hardcoded secrets)", shots / "ss01-pytest-secretguard.png")
-    pdf.add_screenshot("Figure 6: Docker Build — Multi-Stage Non-Root Alpine Container", shots / "ss02-docker-build.png")
+    pdf.add_screenshot("Figure 6: Docker Build - Multi-Stage Non-Root Alpine Container", shots / "ss02-docker-build.png")
     pdf.add_screenshot("Figure 7: Kubernetes Deployment — kubectl apply + Pod/Service Status", shots / "ss03-k8s-kubectl.png")
     pdf.add_screenshot("Figure 8: curl / (JSON), /metrics Output + docker logs", shots / "ss04-curl-metrics-logs.jpg")
     pdf.add_screenshot("Figure 9: Canary Rollout Simulation (90/10) + DR Backup Snapshot", shots / "ss05-canary-dr-backup.png")
