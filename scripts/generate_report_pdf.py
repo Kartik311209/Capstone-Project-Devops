@@ -1,4 +1,4 @@
-"""Generate a clean, submission-ready PDF version of the DevOps Capstone Report with embedded screenshots."""
+﻿"""Generate a clean, submission-ready PDF version of the DevOps Capstone Report with embedded screenshots."""
 
 from pathlib import Path
 from fpdf import FPDF
@@ -47,7 +47,7 @@ class CapstonePDF(FPDF):
             return
         if self.get_y() > 180:
             self.add_page()
-        self.set_font("Helvetica", "B", 9.5)
+        self.set_font("Helvetica", "B", 9)
         self.set_text_color(15, 23, 42)
         self.cell(0, 6, caption, new_x="LMARGIN", new_y="NEXT")
         self.image(str(img_path), w=185)
@@ -85,18 +85,18 @@ def main():
 
     pdf.section_title("2. System Design & Architecture")
     pdf.bullet("Version Control", "Structured Git repository with feature-branch workflow and .gitignore hygiene.")
-    pdf.bullet("Application Layer", "Python FastAPI service (app/main.py) with REST CRUD APIs, /health/live, /health/ready, /metrics (Prometheus), and structured JSON logging.")
-    pdf.bullet("CI/CD Pipeline", "GitHub Actions (.github/workflows/ci-cd.yml) executing Ruff lint, Bandit SAST, Gitleaks & SecretGuard, Pytest with coverage, Docker Buildx, Trivy scan, and Canary rollout.")
+    pdf.bullet("Application Layer", "Python FastAPI service with REST CRUD APIs, /health/live, /health/ready, /metrics (Prometheus), and structured JSON logging.")
+    pdf.bullet("CI/CD Pipeline", "GitHub Actions executing Ruff lint, Bandit SAST, Gitleaks + SecretGuard, Pytest with coverage, Docker Buildx, Trivy scan, and Canary rollout.")
     pdf.bullet("Containerization", "Multi-stage Dockerfile (python:3.12-slim) running as non-root UID 10001 with HEALTHCHECK and 7-service docker-compose.yml stack.")
     pdf.bullet("Kubernetes Orchestration", "Kustomize base + staging/production overlays with Pod Security restricted enforcement, RBAC, NetworkPolicy, HPA, and PodDisruptionBudget.")
-    pdf.bullet("Advanced Deployment", "Argo Rollouts Canary (10% -> 50% -> 100%) gated by Prometheus AnalysisTemplate (>=98% success rate) plus local Nginx Blue/Green 80/20 weighted router and canary_sim.py.")
-    pdf.bullet("Infrastructure & DR", "Terraform (AWS VPC, private subnets, immutable encrypted ECR, security groups), Ansible (UFW, fail2ban, Node Exporter), and dr/backup_restore.ps1 snapshot & restore.")
-    pdf.bullet("Monitoring & Logging", "Prometheus scrape & SLO alert rules, pre-provisioned Grafana dashboard, and Loki + Promtail structured JSON log pipeline.")
+    pdf.bullet("Advanced Deployment", "Argo Rollouts Canary (10% -> 50% -> 100%) gated by Prometheus AnalysisTemplate (>=98% success rate) plus local Nginx Blue/Green 80/20 weighted router.")
+    pdf.bullet("Infrastructure & DR", "Terraform (AWS VPC, ECR), Ansible (UFW, fail2ban, Node Exporter), and DR backup/verify/restore automation.")
+    pdf.bullet("Monitoring & Logging", "Prometheus SLO alert rules, pre-provisioned Grafana dashboard, and Loki + Promtail structured JSON log pipeline.")
 
     pdf.section_title("3. Security Controls")
     pdf.body_text(
-        "- Static & Supply Chain: Ruff, Bandit SAST, Gitleaks + security/secret_guard.py, Trivy CRITICAL/HIGH gates.\n"
-        "- Container Hardening: Non-root user (appuser), minimal runtime image, read-only K8s root filesystem, ALL Linux capabilities dropped.\n"
+        "- Static & Supply Chain: Ruff, Bandit SAST, Gitleaks + SecretGuard, Trivy CRITICAL/HIGH gates.\n"
+        "- Container Hardening: Non-root user, minimal runtime image, read-only K8s root filesystem, ALL Linux capabilities dropped.\n"
         "- Cluster & Cloud: Least-privilege K8s RBAC, default-restricted NetworkPolicy, UFW default-deny, ECR scan-on-push and AES256 encryption."
     )
 
@@ -117,8 +117,8 @@ def main():
     pdf.set_text_color(30, 41, 59)
     pdf.add_screenshot("Figure 5: Pytest Suite (3 passed) + SecretGuard Scan (0 hardcoded secrets)", shots / "ss01-pytest-secretguard.png")
     pdf.add_screenshot("Figure 6: Docker Build - Multi-Stage Non-Root Alpine Container", shots / "ss02-docker-build.png")
-    pdf.add_screenshot("Figure 7: Kubernetes Deployment — kubectl apply + Pod/Service Status", shots / "ss03-k8s-kubectl.png")
-    pdf.add_screenshot("Figure 8: curl / (JSON), /metrics Output + docker logs", shots / "ss04-curl-metrics-logs.jpg")
+    pdf.add_screenshot("Figure 7: Kubernetes Deployment - kubectl apply + Pod/Service Status", shots / "ss03-k8s-kubectl.png")
+    pdf.add_screenshot("Figure 8: curl (JSON), /metrics Output + docker logs", shots / "ss04-curl-metrics-logs.jpg")
     pdf.add_screenshot("Figure 9: Canary Rollout Simulation (90/10) + DR Backup Snapshot", shots / "ss05-canary-dr-backup.png")
     pdf.add_screenshot("Figure 10: Canary Router + Backup Restore Full Verification", shots / "ss06-canary-dr-full.png")
 
