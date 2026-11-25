@@ -100,12 +100,11 @@ def main():
         "- Cluster & Cloud: Least-privilege K8s RBAC, default-restricted NetworkPolicy, UFW default-deny, ECR scan-on-push and AES256 encryption."
     )
 
-    pdf.section_title("4. Implementation Evidence & Screenshots")
-    pdf.add_screenshot("Figure 1: Live FastAPI Service (/health/ready, /api/v1/version, /api/v1/tasks)", shots / "01-live-api-and-health.png")
-    pdf.add_screenshot("Figure 2: Live Prometheus /metrics Exposition", shots / "02-prometheus-metrics.png")
-    pdf.add_screenshot("Figure 3: Kubernetes Kustomize Production Overlay", shots / "03-k8s-kustomize.png")
-    pdf.add_screenshot("Figure 4: Automated Pytest (95% Coverage), Ruff, Bandit SAST & SecretGuard", shots / "04-tests-and-security.png")
-    pdf.add_screenshot("Figure 5: Canary Rollout Auto-Rollback Simulation & DR Backup/Restore", shots / "05-canary-and-dr.png")
+    pdf.section_title("4. Implementation Evidence & Live Screenshots")
+    pdf.add_screenshot("Figure 1: Live PulseTrack Web Dashboard (http://localhost:8000/)", shots / "01-live-dashboard.png")
+    pdf.add_screenshot("Figure 2: Interactive Swagger / OpenAPI 3.1 Documentation (/docs)", shots / "02-swagger-api-docs.png")
+    pdf.add_screenshot("Figure 3: Live Prometheus Metrics Exposition (/metrics)", shots / "03-prometheus-metrics.png")
+    pdf.add_screenshot("Figure 4: Live Tasks REST API JSON Response (/api/v1/tasks)", shots / "04-tasks-api-json.png")
 
     pdf.section_title("5. Conclusion")
     pdf.body_text(
