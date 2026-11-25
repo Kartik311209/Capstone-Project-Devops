@@ -1,4 +1,4 @@
-"""Generate a clean, submission-ready PDF version of the DevOps Capstone Report."""
+"""Generate a clean, submission-ready PDF version of the DevOps Capstone Report with embedded screenshots."""
 
 from pathlib import Path
 from fpdf import FPDF
@@ -42,8 +42,22 @@ class CapstonePDF(FPDF):
         self.multi_cell(0, 5.5, text)
         self.ln(1)
 
+    def add_screenshot(self, caption: str, img_path: Path):
+        if not img_path.exists():
+            return
+        if self.get_y() > 180:
+            self.add_page()
+        self.set_font("Helvetica", "B", 9.5)
+        self.set_text_color(15, 23, 42)
+        self.cell(0, 6, caption, new_x="LMARGIN", new_y="NEXT")
+        self.image(str(img_path), w=185)
+        self.ln(4)
+
 
 def main():
+    root = Path(__file__).resolve().parent.parent
+    shots = root / "screenshots"
+
     pdf = CapstonePDF()
     pdf.set_auto_page_break(auto=True, margin=18)
     pdf.add_page()
@@ -66,42 +80,41 @@ def main():
         "configuration drift, unmonitored services, and all-at-once deployments increase outage risk "
         "and slow incident recovery. PulseTrack addresses this by automating the full software delivery "
         "lifecycle from Git commit to production Canary rollout with built-in security, observability, "
-        "and automated rollback."
+        "disaster recovery, and automated rollback."
     )
 
     pdf.section_title("2. System Design & Architecture")
     pdf.bullet("Version Control", "Structured Git repository with feature-branch workflow and .gitignore hygiene.")
     pdf.bullet("Application Layer", "Python FastAPI service (app/main.py) with REST CRUD APIs, /health/live, /health/ready, /metrics (Prometheus), and structured JSON logging.")
-    pdf.bullet("CI/CD Pipeline", "GitHub Actions (.github/workflows/ci-cd.yml) executing Ruff lint, Bandit SAST, Gitleaks secret scan, Pytest with coverage, Docker Buildx, Trivy scan, and Canary rollout.")
+    pdf.bullet("CI/CD Pipeline", "GitHub Actions (.github/workflows/ci-cd.yml) executing Ruff lint, Bandit SAST, Gitleaks & SecretGuard, Pytest with coverage, Docker Buildx, Trivy scan, and Canary rollout.")
     pdf.bullet("Containerization", "Multi-stage Dockerfile (python:3.12-slim) running as non-root UID 10001 with HEALTHCHECK and 7-service docker-compose.yml stack.")
     pdf.bullet("Kubernetes Orchestration", "Kustomize base + staging/production overlays with Pod Security restricted enforcement, RBAC, NetworkPolicy, HPA, and PodDisruptionBudget.")
-    pdf.bullet("Advanced Deployment", "Argo Rollouts Canary (10% -> 50% -> 100%) gated by Prometheus AnalysisTemplate (>=98% success rate) plus local Nginx Blue/Green 80/20 weighted router.")
-    pdf.bullet("Infrastructure Automation", "Terraform (AWS VPC, private subnets, immutable encrypted ECR, security groups) and Ansible (UFW firewall, fail2ban, non-root deploy user, Node Exporter).")
+    pdf.bullet("Advanced Deployment", "Argo Rollouts Canary (10% -> 50% -> 100%) gated by Prometheus AnalysisTemplate (>=98% success rate) plus local Nginx Blue/Green 80/20 weighted router and canary_sim.py.")
+    pdf.bullet("Infrastructure & DR", "Terraform (AWS VPC, private subnets, immutable encrypted ECR, security groups), Ansible (UFW, fail2ban, Node Exporter), and dr/backup_restore.ps1 snapshot & restore.")
     pdf.bullet("Monitoring & Logging", "Prometheus scrape & SLO alert rules, pre-provisioned Grafana dashboard, and Loki + Promtail structured JSON log pipeline.")
 
     pdf.section_title("3. Security Controls")
     pdf.body_text(
-        "- Static & Supply Chain: Ruff, Bandit SAST, Gitleaks secret scanning, Trivy CRITICAL/HIGH gates.\n"
+        "- Static & Supply Chain: Ruff, Bandit SAST, Gitleaks + security/secret_guard.py, Trivy CRITICAL/HIGH gates.\n"
         "- Container Hardening: Non-root user (appuser), minimal runtime image, read-only K8s root filesystem, ALL Linux capabilities dropped.\n"
         "- Cluster & Cloud: Least-privilege K8s RBAC, default-restricted NetworkPolicy, UFW default-deny, ECR scan-on-push and AES256 encryption."
     )
 
-    pdf.section_title("4. Testing, Verification & Evidence")
-    pdf.body_text(
-        "- Automated Pytest Suite: 5/5 tests passing (health probes, version/dashboard, Prometheus /metrics, task CRUD lifecycle, incident reporting).\n"
-        "- Static Quality & Security: Ruff check and Bandit SAST pass with zero findings.\n"
-        "- Kubernetes Manifests: kubectl kustomize validated cleanly across base, staging, and production overlays.\n"
-        "- Sample Data & Logs: Provided in samples/app-sample.log and samples/sample-payloads.json."
-    )
+    pdf.section_title("4. Implementation Evidence & Screenshots")
+    pdf.add_screenshot("Figure 1: Live FastAPI Service (/health/ready, /api/v1/version, /api/v1/tasks)", shots / "01-live-api-and-health.png")
+    pdf.add_screenshot("Figure 2: Live Prometheus /metrics Exposition", shots / "02-prometheus-metrics.png")
+    pdf.add_screenshot("Figure 3: Kubernetes Kustomize Production Overlay", shots / "03-k8s-kustomize.png")
+    pdf.add_screenshot("Figure 4: Automated Pytest (95% Coverage), Ruff, Bandit SAST & SecretGuard", shots / "04-tests-and-security.png")
+    pdf.add_screenshot("Figure 5: Canary Rollout Auto-Rollback Simulation & DR Backup/Restore", shots / "05-canary-and-dr.png")
 
     pdf.section_title("5. Conclusion")
     pdf.body_text(
         "PulseTrack delivers a complete, reproducible, production-grade DevOps platform integrating CI/CD, "
         "containerization, Kubernetes, Terraform, Ansible, Prometheus/Grafana/Loki observability, security "
-        "hardening, and automated Canary/Blue-Green delivery."
+        "hardening, disaster recovery, and automated Canary/Blue-Green delivery."
     )
 
-    out_path = Path(__file__).resolve().parent.parent / "docs" / "CAPSTONE_REPORT.pdf"
+    out_path = root / "docs" / "CAPSTONE_REPORT.pdf"
     pdf.output(str(out_path))
     print(f"Generated PDF: {out_path}")
 

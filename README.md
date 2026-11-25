@@ -57,7 +57,15 @@ Capstone_devops/
 │   ├── app-sample.log             # Sample structured JSON logs
 │   └── sample-payloads.json       # Sample API request payloads
 ├── scripts/
-│   └── canary-switch.ps1          # PowerShell helper to shift Blue/Green traffic weights
+│   ├── canary-switch.ps1          # PowerShell helper to shift Blue/Green traffic weights
+│   ├── canary_sim.py              # Progressive Canary & auto-rollback simulator
+│   ├── generate_report_pdf.py     # Builds docs/CAPSTONE_REPORT.pdf with screenshots
+│   └── render_terminal_screenshots.py
+├── security/
+│   └── secret_guard.py            # Secret scanner & log masking verifier
+├── dr/
+│   └── backup_restore.ps1         # Snapshot backup, verify & restore automation
+├── screenshots/                   # Verification & live execution screenshots
 ├── docs/
 │   └── CAPSTONE_REPORT.md         # Full Capstone documentation (Problem, Design, Evidence, Results)
 ├── Dockerfile                     # Multi-stage, non-root, OCI-labeled container image
