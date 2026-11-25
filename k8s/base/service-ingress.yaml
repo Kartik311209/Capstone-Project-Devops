@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pulsetrack-svc
+  namespace: pulsetrack
+  labels:
+    app: pulsetrack
+spec:
+  type: ClusterIP
+  selector:
+    app: pulsetrack
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pulsetrack-ingress
+  namespace: pulsetrack
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pulsetrack.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: pulsetrack-svc
+                port:
+                  number: 80

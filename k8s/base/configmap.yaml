@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pulsetrack-config
+  namespace: pulsetrack
+data:
+  APP_NAME: "pulsetrack"
+  LOG_LEVEL: "INFO"
+  DEPLOYMENT_TRACK: "stable"

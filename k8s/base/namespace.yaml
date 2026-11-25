@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pulsetrack
+  labels:
+    app.kubernetes.io/name: pulsetrack
+    pod-security.kubernetes.io/enforce: restricted

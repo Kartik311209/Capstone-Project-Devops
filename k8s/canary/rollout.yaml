@@ -1,0 +1,63 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: pulsetrack-success-rate
+  namespace: pulsetrack
+spec:
+  metrics:
+    - name: success-rate
+      interval: 30s
+      successCondition: result[0] >= 0.98
+      failureLimit: 2
+      provider:
+        prometheus:
+          address: http://prometheus-operated.monitoring:9090
+          query: |
+            sum(rate(http_requests_total{status!~"5.."}[2m]))
+            /
+            clamp_min(sum(rate(http_requests_total[2m])), 1)
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: pulsetrack-canary
+  namespace: pulsetrack
+spec:
+  replicas: 4
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: pulsetrack
+  template:
+    metadata:
+      labels:
+        app: pulsetrack
+    spec:
+      serviceAccountName: pulsetrack-sa
+      containers:
+        - name: pulsetrack
+          image: ghcr.io/example/pulsetrack:1.1.0-canary
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+  strategy:
+    canary:
+      canaryService: pulsetrack-canary-svc
+      stableService: pulsetrack-stable-svc
+      steps:
+        - setWeight: 10
+        - pause: { duration: 1m }
+        - analysis:
+            templates:
+              - templateName: pulsetrack-success-rate
+        - setWeight: 50
+        - pause: { duration: 2m }
+        - analysis:
+            templates:
+              - templateName: pulsetrack-success-rate
+        - setWeight: 100
