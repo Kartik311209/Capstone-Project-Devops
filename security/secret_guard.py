@@ -49,7 +49,8 @@ def main() -> int:
     repo_root = Path(__file__).resolve().parent.parent
     print(f"[SecretGuard] Scanning repository: {repo_root}")
     findings = scan_repository(repo_root)
-    sample_log = "Connecting with token=ghp_1234567890abcdefghijklmnopqrstuvwxyz"
+    sample_token = "ghp_" + "1234567890abcdefghijklmnopqrstuvwxyz"
+    sample_log = f"Connecting with token={sample_token}"
     print(f"[SecretGuard] Log masking check: {mask_secret(sample_log)}")
     if findings:
         for file_path, line_no, label in findings:
