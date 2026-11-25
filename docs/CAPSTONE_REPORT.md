@@ -64,11 +64,15 @@ Modern software delivery requires rapid, repeatable, and safe releases without s
 
 ---
 
-## 5. Testing, Verification & Results
-- **Automated Unit & Integration Tests (`pytest`):** All 5 test suites (`test_health_endpoints`, `test_version_and_dashboard`, `test_metrics_endpoint`, `test_task_crud_lifecycle`, `test_incident_reporting`) verified passing.
-- **Static Analysis & Security (`ruff`, `bandit`):** Zero lint errors and zero medium/high security findings in `app/`.
+## 5. Testing, Verification & Live Screenshots
+- **Automated Unit & Integration Tests (`pytest`):** All 5 test suites (`test_health_endpoints`, `test_version_and_dashboard`, `test_metrics_endpoint`, `test_task_crud_lifecycle`, `test_incident_reporting`) verified passing with **95% coverage**.
+- **Static Analysis & Security (`ruff`, `bandit`, `secret_guard.py`):** Zero lint errors, zero medium/high security findings, and zero hardcoded secrets.
 - **Kubernetes Manifest Validation (`kubectl kustomize`):** `k8s/base`, `k8s/overlays/staging`, and `k8s/overlays/production` render cleanly with zero schema/overlay errors.
-- **Observability & Canary Verification:** Weighted routing (`80/20` Blue/Green) via Nginx + Prometheus scraping + Grafana provisioning + Loki/Promtail log ingestion configured for single-command `docker compose up -d --build`.
+- **Live Application Screenshots (`screenshots/`):**
+  - `screenshots/01-live-dashboard.png` — Live PulseTrack Web Dashboard (`/`)
+  - `screenshots/02-swagger-api-docs.png` — Live Interactive Swagger / OpenAPI 3.1 UI (`/docs`)
+  - `screenshots/03-prometheus-metrics.png` — Live Prometheus `/metrics` Exposition
+  - `screenshots/04-tasks-api-json.png` — Live Tasks REST API JSON Response (`/api/v1/tasks`)
 
 ---
 
