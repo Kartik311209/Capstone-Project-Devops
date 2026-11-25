@@ -1,0 +1,123 @@
+name: PulseTrack CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
+env:
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/pulsetrack
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  quality-and-secrets:
+    name: Lint & Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dev tools and lint with Ruff
+        run: |
+          pip install ruff bandit
+          ruff check app tests
+          bandit -r app -ll
+
+      - name: Secret Scan with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  unit-tests:
+    name: Unit & Integration Tests
+    runs-on: ubuntu-latest
+    needs: quality-and-secrets
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies & run pytest
+        run: |
+          pip install -r app/requirements.txt -r app/requirements-dev.txt
+          pytest --cov=app --cov-report=term-missing
+
+  build-and-security-scan:
+    name: Build Image & Trivy Scan
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          load: ${{ github.event_name == 'pull_request' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Run Trivy Vulnerability & IaC Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+
+  deploy-canary-production:
+    name: Canary Rollout & Auto-Rollback
+    runs-on: ubuntu-latest
+    needs: build-and-security-scan
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Kubernetes Manifests
+        run: |
+          kubectl kustomize k8s/overlays/production > rendered-prod.yaml
+          head -n 40 rendered-prod.yaml
+
+      - name: Progressive Canary Deployment (Dry-Run / Cluster Hook)
+        run: |
+          echo "Stage 1: Shift 10% traffic to canary (${{ github.sha }})"
+          echo "Stage 2: Verify SLO (5xx < 2%, P95 < 500ms)"
+          echo "Stage 3: Promote to 100% or trigger kubectl rollout undo on breach"

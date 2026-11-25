@@ -1,0 +1,13 @@
+{
+  "sample_task_create": {
+    "title": "Automate Canary Rollback Gate",
+    "description": "Abort rollout if Prometheus 5xx error rate exceeds 2% over 2m",
+    "priority": "critical",
+    "owner": "platform-sre"
+  },
+  "sample_incident_create": {
+    "service": "pulsetrack-api",
+    "severity": "high",
+    "summary": "Latency spike detected on green-canary track"
+  }
+}
