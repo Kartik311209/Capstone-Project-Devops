@@ -105,6 +105,8 @@ def main():
     pdf.add_screenshot("Figure 2: Interactive Swagger / OpenAPI 3.1 Documentation (/docs)", shots / "02-swagger-api-docs.png")
     pdf.add_screenshot("Figure 3: Live Prometheus Metrics Exposition (/metrics)", shots / "03-prometheus-metrics.png")
     pdf.add_screenshot("Figure 4: Live Tasks REST API JSON Response (/api/v1/tasks)", shots / "04-tasks-api-json.png")
+    pdf.add_screenshot("Figure 5: PowerShell Execution - Pytest Suite & 95% Coverage", shots / "05-powershell-tests-security.png")
+    pdf.add_screenshot("Figure 6: PowerShell Execution - Canary Rollout, SecretGuard & DR Backup", shots / "06-powershell-canary-dr.png")
 
     pdf.section_title("5. Conclusion")
     pdf.body_text(

@@ -73,6 +73,8 @@ Modern software delivery requires rapid, repeatable, and safe releases without s
   - `screenshots/02-swagger-api-docs.png` — Live Interactive Swagger / OpenAPI 3.1 UI (`/docs`)
   - `screenshots/03-prometheus-metrics.png` — Live Prometheus `/metrics` Exposition
   - `screenshots/04-tasks-api-json.png` — Live Tasks REST API JSON Response (`/api/v1/tasks`)
+  - `screenshots/05-powershell-tests-security.png` — Real PowerShell Execution: Pytest Suite & 95% Coverage
+  - `screenshots/06-powershell-canary-dr.png` — Real PowerShell Execution: Canary Rollout, SecretGuard & DR Backup
 
 ---
 
