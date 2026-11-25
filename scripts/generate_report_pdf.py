@@ -100,13 +100,27 @@ def main():
         "- Cluster & Cloud: Least-privilege K8s RBAC, default-restricted NetworkPolicy, UFW default-deny, ECR scan-on-push and AES256 encryption."
     )
 
-    pdf.section_title("4. Implementation Evidence & Live Screenshots")
+    pdf.section_title("4. Implementation Evidence & Screenshots")
+
+    pdf.set_font("Helvetica", "B", 11)
+    pdf.set_text_color(14, 165, 233)
+    pdf.cell(0, 7, "4.1  Live Application (Browser Screenshots)", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_text_color(30, 41, 59)
     pdf.add_screenshot("Figure 1: Live PulseTrack Web Dashboard (http://localhost:8000/)", shots / "01-live-dashboard.png")
-    pdf.add_screenshot("Figure 2: Interactive Swagger / OpenAPI 3.1 Documentation (/docs)", shots / "02-swagger-api-docs.png")
+    pdf.add_screenshot("Figure 2: Interactive Swagger / OpenAPI 3.1 API Documentation (/docs)", shots / "02-swagger-api-docs.png")
     pdf.add_screenshot("Figure 3: Live Prometheus Metrics Exposition (/metrics)", shots / "03-prometheus-metrics.png")
-    pdf.add_screenshot("Figure 4: Live Tasks REST API JSON Response (/api/v1/tasks)", shots / "04-tasks-api-json.png")
-    pdf.add_screenshot("Figure 5: PowerShell Execution - Pytest Suite & 95% Coverage", shots / "05-powershell-tests-security.png")
-    pdf.add_screenshot("Figure 6: PowerShell Execution - Canary Rollout, SecretGuard & DR Backup", shots / "06-powershell-canary-dr.png")
+    pdf.add_screenshot("Figure 4: Live REST API Tasks JSON Response (/api/v1/tasks)", shots / "04-tasks-api-json.png")
+
+    pdf.set_font("Helvetica", "B", 11)
+    pdf.set_text_color(14, 165, 233)
+    pdf.cell(0, 7, "4.2  Terminal Execution Evidence", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_text_color(30, 41, 59)
+    pdf.add_screenshot("Figure 5: Pytest Suite (3 passed) + SecretGuard Scan (0 hardcoded secrets)", shots / "ss01-pytest-secretguard.png")
+    pdf.add_screenshot("Figure 6: Docker Build — Multi-Stage Non-Root Alpine Container", shots / "ss02-docker-build.png")
+    pdf.add_screenshot("Figure 7: Kubernetes Deployment — kubectl apply + Pod/Service Status", shots / "ss03-k8s-kubectl.png")
+    pdf.add_screenshot("Figure 8: curl / (JSON), /metrics Output + docker logs", shots / "ss04-curl-metrics-logs.jpg")
+    pdf.add_screenshot("Figure 9: Canary Rollout Simulation (90/10) + DR Backup Snapshot", shots / "ss05-canary-dr-backup.png")
+    pdf.add_screenshot("Figure 10: Canary Router + Backup Restore Full Verification", shots / "ss06-canary-dr-full.png")
 
     pdf.section_title("5. Conclusion")
     pdf.body_text(
